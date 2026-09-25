@@ -1,0 +1,10 @@
+[
+  {
+    "id": "TEST001",
+    "name": "Prodotto di esempio PrezziSmart",
+    "url": "https://www.amazon.it/",
+    "old_price": 99.99,
+    "price": 49.99,
+    "category": "Elettronica"
+  }
+]
