@@ -2,6 +2,8 @@ name: PrezziSmart Bot
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
 
 jobs:
   send-test-message:
