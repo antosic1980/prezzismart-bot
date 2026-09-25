@@ -5,8 +5,8 @@ import requests
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHANNEL = os.environ["TELEGRAM_CHANNEL"]
 
-with open("offers.json", "r", encoding="utf-8") as file:
-    offers = json.load(file)
+OFFERS_FILE = "offers.json"
+PUBLISHED_FILE = "published.json"
 
 
 def calculate_discount(old_price, price):
@@ -54,17 +54,45 @@ def send_message(message):
     response.raise_for_status()
 
 
+# Legge le offerte
+with open(OFFERS_FILE, "r", encoding="utf-8") as file:
+    offers = json.load(file)
+
+
+# Legge le offerte già pubblicate
+with open(PUBLISHED_FILE, "r", encoding="utf-8") as file:
+    published = json.load(file)
+
+
 for offer in offers:
+
+    offer_id = offer["id"]
+
+    # Se già pubblicata, la saltiamo
+    if offer_id in published:
+        print(f"Già pubblicata: {offer['name']}")
+        continue
 
     discount = calculate_discount(
         offer["old_price"],
         offer["price"]
     )
 
-    # Pubblica solamente offerte con almeno il 30% di sconto
+    # Pubblica solo offerte con almeno il 30% di sconto
     if discount >= 30:
+
         message = create_message(offer)
+
         send_message(message)
-        print(f"Pubblicata offerta: {offer['name']}")
+
+        published.append(offer_id)
+
+        print(f"Pubblicata: {offer['name']}")
+
     else:
-        print(f"Scartata: {offer['name']}")
+        print(f"Sconto insufficiente: {offer['name']}")
+
+
+# Salva l'elenco aggiornato
+with open(PUBLISHED_FILE, "w", encoding="utf-8") as file:
+    json.dump(published, file, indent=2)
