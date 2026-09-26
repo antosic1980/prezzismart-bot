@@ -1,13 +1,25 @@
 import os
 import json
 import requests
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHANNEL = os.environ["TELEGRAM_CHANNEL"]
 
 OFFERS_FILE = "offers.json"
 PUBLISHED_FILE = "published.json"
+TIMEZONE = ZoneInfo("Europe/Rome")
 
+
+def current_italian_datetime():
+    return datetime.now(TIMEZONE)
+
+
+def format_italian_datetime():
+    now = current_italian_datetime()
+
+    return now.strftime("%Y-%m-%dT%H:%M:%S")
 
 def calculate_discount(old_price, price):
     if old_price <= 0:
@@ -81,11 +93,16 @@ for offer in offers:
     # Pubblica solo offerte con almeno il 30% di sconto
     if discount >= 30:
 
-        message = create_message(offer)
+    # Se l'offerta non ha ancora una data,
+    # assegna automaticamente data e ora italiane
+    if not offer.get("date"):
+        offer["date"] = format_italian_datetime()
 
-        send_message(message)
+    message = create_message(offer)
 
-        published.append(offer_id)
+    send_message(message)
+
+    published.append(offer_id)
 
         print(f"Pubblicata: {offer['name']}")
 
