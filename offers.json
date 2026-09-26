@@ -5,7 +5,8 @@
     "url": "https://www.amazon.it/",
     "old_price": 99.99,
     "price": 49.99,
-    "category": "Elettronica"
+    "category": "Elettronica",
+    "date": "2026-09-26"
   },
   {
     "id": "TEST002",
@@ -13,6 +14,7 @@
     "url": "https://www.amazon.it/",
     "old_price": 79.99,
     "price": 39.99,
-    "category": "Casa"
+    "category": "Casa",
+    "date": "2026-09-26"
   }
 ]
