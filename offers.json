@@ -16,5 +16,13 @@
     "price": 39.99,
     "category": "Casa",
     "date": "2026-09-26T08:30:00"
-  }
+  },
+{
+  "id": "TEST003",
+  "name": "Terzo prodotto di prova PrezziSmart",
+  "url": "https://www.amazon.it/",
+  "old_price": 120.00,
+  "price": 60.00,
+  "category": "Tecnologia"
+}
 ]
