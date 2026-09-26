@@ -4,11 +4,13 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHANNEL = os.environ["TELEGRAM_CHANNEL"]
 
 OFFERS_FILE = "offers.json"
 PUBLISHED_FILE = "published.json"
+
 TIMEZONE = ZoneInfo("Europe/Rome")
 
 
@@ -18,8 +20,8 @@ def current_italian_datetime():
 
 def format_italian_datetime():
     now = current_italian_datetime()
-
     return now.strftime("%Y-%m-%dT%H:%M:%S")
+
 
 def calculate_discount(old_price, price):
     if old_price <= 0:
@@ -34,6 +36,21 @@ def create_message(offer):
 
     discount = calculate_discount(old_price, price)
 
+    date_text = offer.get("date", "")
+
+    if date_text:
+        try:
+            date = datetime.fromisoformat(date_text)
+            date = date.astimezone(TIMEZONE)
+
+            formatted_date = date.strftime(
+                "%d/%m/%Y delle ore %H.%M"
+            )
+        except ValueError:
+            formatted_date = date_text
+    else:
+        formatted_date = ""
+
     return f"""🔥 OFFERTA PREZZISMART
 
 📦 {offer["name"]}
@@ -43,6 +60,8 @@ def create_message(offer):
 📉 Sconto: -{discount}%
 
 🏷️ Categoria: {offer["category"]}
+
+📅 Offerta del {formatted_date}
 
 👉 Vedi l'offerta:
 {offer["url"]}
@@ -93,16 +112,16 @@ for offer in offers:
     # Pubblica solo offerte con almeno il 30% di sconto
     if discount >= 30:
 
-    # Se l'offerta non ha ancora una data,
-    # assegna automaticamente data e ora italiane
-    if not offer.get("date"):
-        offer["date"] = format_italian_datetime()
+        # Se manca la data, la genera automaticamente
+        # usando il fuso orario italiano
+        if not offer.get("date"):
+            offer["date"] = format_italian_datetime()
 
-    message = create_message(offer)
+        message = create_message(offer)
 
-    send_message(message)
+        send_message(message)
 
-    published.append(offer_id)
+        published.append(offer_id)
 
         print(f"Pubblicata: {offer['name']}")
 
@@ -110,6 +129,11 @@ for offer in offers:
         print(f"Sconto insufficiente: {offer['name']}")
 
 
-# Salva l'elenco aggiornato
+# Salva l'elenco aggiornato delle offerte pubblicate
 with open(PUBLISHED_FILE, "w", encoding="utf-8") as file:
     json.dump(published, file, indent=2)
+
+
+# Salva eventuali date generate automaticamente
+with open(OFFERS_FILE, "w", encoding="utf-8") as file:
+    json.dump(offers, file, indent=2, ensure_ascii=False)
