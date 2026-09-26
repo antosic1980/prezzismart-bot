@@ -34,6 +34,6 @@ jobs:
         run: |
           git config user.name "PrezziSmart Bot"
           git config user.email "actions@github.com"
-          git add published.json
+          git add published.json offers.json
           git diff --cached --quiet || git commit -m "Aggiorna archivio offerte pubblicate"
           git push
